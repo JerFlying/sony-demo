@@ -1,6 +1,6 @@
 <template>
   <div class="hello" @mousedown="move">
-    <Coordinate v-for="m in msg" :key="m.x" :x="m.x" :y="m.y"/>
+    <Coordinate v-for="m in pos" :key="m.id" :x="m.x" :y="m.y"/>
   </div>
 </template>
 
@@ -9,19 +9,11 @@ import Coordinate from './Coordinate'
 export default {
   name: 'HelloWorld',
   components: {Coordinate},
-  data () {
-    return {
-      positionX: 0,
-      positionY: 0,
-      websock: null,
-      msg: []
+  props: {
+    pos: {
+      type: Array,
+      required: true
     }
-  },
-  destroyed: function () {
-    this.websocketclose()
-  },
-  created () {
-    this.initWebSocket()
   },
   methods: {
     move (e) {
@@ -31,16 +23,10 @@ export default {
       // 算出鼠标相对元素的位置
       let disX = e.clientX - odiv.offsetLeft
       let disY = e.clientY - odiv.offsetTop
-      document.onmousemove = (e) => { // 鼠标按下并移动的事件
-        // 用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+      document.onmousemove = (e) => {
         let left = e.clientX - disX
         let top = e.clientY - disY
 
-        // 绑定元素位置到positionX和positionY上面
-        this.positionX = top
-        this.positionY = left
-
-        // 移动当前元素
         if (left <= parent.offsetLeft - odiv.offsetWidth) {
           odiv.style.left = 20 - odiv.offsetWidth + 'px'
         } else if (left >= parent.offsetLeft + parent.offsetWidth) {
@@ -60,42 +46,6 @@ export default {
         document.onmousemove = null
         document.onmouseup = null
       }
-    },
-    initWebSocket () {
-      const wsuri = 'ws://localhost:3000'
-
-      this.$websocket = new WebSocket(wsuri)
-
-      this.$websocket.onopen = this.websocketonopen
-
-      this.$websocket.onerror = this.websocketonerror
-
-      this.$websocket.onmessage = this.websocketonmessage
-
-      this.$websocket.onclose = this.websocketclose
-    },
-
-    websocketonopen () {
-      console.log('WebSocket连接成功')
-    },
-
-    websocketonerror (e) {
-      console.log('WebSocket连接发生错误')
-    },
-
-    websocketonmessage (e) {
-      // console.log(e.data)
-
-      this.msg.push(JSON.parse(e.data))
-      // console.log(this.msg)
-    },
-
-    websocketsend (agentData) {
-      this.$websocket.send(agentData)
-    },
-
-    websocketclose (e) {
-      console.log('connection closed (' + e.code + ')')
     }
   },
   computed: {}
@@ -106,9 +56,14 @@ export default {
 <style scoped>
   .hello {
     position: relative;
-    background-color: aquamarine;
-    height: 2000px;
-    width: 1000px;
+    height: 1500px;
+    width: 1500px;
+    background:
+      -webkit-linear-gradient(top, transparent 99px, aquamarine 100px),
+      -webkit-linear-gradient(left, transparent 99px, aquamarine 100px)
+  ;
+    background-size: 100px 100px;
+    border: 1px aquamarine solid;
   }
 h1, h2 {
   font-weight: normal;

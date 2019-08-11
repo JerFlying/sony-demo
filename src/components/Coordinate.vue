@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :style="{left:x + 'px', top:y+ 'px'}" class="dot">Position ({{x}}, {{y}})</div>
+    <div :style="{left:x + 'px', top:y+ 'px'}" class="dot">Position ({{x.toFixed(2)}}, {{y.toFixed(2)}})</div>
   </div>
 </template>
 <script>
@@ -21,7 +21,7 @@ export default {
 </script>
 <style>
   .dot {
-    position: relative;
+    position: absolute;
     background-color: blueviolet;
     width: 10px;
     height: 10px;
